@@ -207,10 +207,10 @@ export default function P3Menu({ onNavigate }) {
           z-index: 20;
           font-family: 'Anton', sans-serif;
           font-style: italic;
-          font-size: 108px;
+          font-size: 52px;
           line-height: 0.88;
           letter-spacing: 2px;
-          color: rgba(34, 211, 238, 0.35);
+          color: rgba(34, 211, 238, 0.25);
           transform: rotate(18deg);
           transform-origin: left top;
           user-select: none;
@@ -236,7 +236,7 @@ export default function P3Menu({ onNavigate }) {
 
       <div className="p3-overlay">
         <div className="p3-name-tag">
-          <span>silver wolf //</span>
+          <span>souls-syntax //</span>
           <span>system hack</span>
         </div>
         <div className="p3-stripe" />
