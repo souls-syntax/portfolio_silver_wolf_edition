@@ -11,6 +11,7 @@ import AboutMe from './AboutMe'
 import BlogPage from './BlogPage'
 import BlogPost from './BlogPost'
 import AdminPage from './AdminPage'
+import ProjectPage from './projects'
 import { prefetchBlogs } from './blogCache'
 import './App.css'
 
@@ -49,7 +50,7 @@ function AnimatedRoutes() {
           <PageTransition variant="socials"><Socials /></PageTransition>
         } />
         <Route path="/sideproj" element={
-          <PageTransition><ResumePage src={menuVideo} mode="projects" /></PageTransition>
+          <PageTransition><ProjectPage src={menuVideo} mode="projects" /></PageTransition>
         } />
         <Route path="/blog" element={
           <PageTransition><BlogPage src={menuVideo} /></PageTransition>

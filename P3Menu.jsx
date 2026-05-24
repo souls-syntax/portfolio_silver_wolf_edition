@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 const ITEMS = [
   { id: "about",  label: "ABOUT ME",    href: "#about",  fontSize: 110, offsetX: 0,  offsetY: 0  },
   { id: "resume", label: "RESUME",      href: "#resume", fontSize: 90,  offsetX: 38, offsetY: 0 },
+  { id: "sideproj", label: "SIDE PROJECTS", href: "#sideproj", fontSize: 75,  offsetX: 14, offsetY: 0 },
   { id: "github", label: "GITHUB LINK", href: "https://github.com/yourname", fontSize: 75, offsetX: 14, offsetY: 0 },
 ];
 

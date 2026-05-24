@@ -9,93 +9,85 @@ import icon3 from './assets/icon3.png';
 
 // step
 const ITEMS = [
-  { id: 'edu',   title: 'EDUCATION',   subtitle: 'CS Undergrad',          icon: icon1, img: char1, tag: 'EDU',   badge: 'Lv.2', color: '#22d3ee' },
-  { id: 'skill', title: 'TECH STACK',  subtitle: 'C · CUDA · Zig',        icon: icon2, img: char2, tag: 'SKILL', badge: 'Lv.5', color: '#a855f7' },
-  { id: 'proj',  title: 'PROJECTS',    subtitle: 'OSdev · Shell · Loader', icon: icon3, img: char3, tag: 'PROJ',  badge: 'Lv.4', color: '#39ff14' },
-  { id: 'lang',  title: 'LANGUAGES',   subtitle: 'C · CUDA · Zig',        icon: icon1, img: char1, tag: 'LANG',  badge: 'Lv.3', color: '#facc15' },
-  {  id: 'exp',  title: 'EXPERIENCE',  subtitle: 'Internships · Research',  icon: icon2,  img: char2,  tag: 'EXP',  badge: 'Lv.6',  color: '#ff6b6b' },
+  { 
+    id: 'sauceos', 
+    title: 'SAUCEOS', 
+    subtitle: 'x86-64 OS from Scratch', 
+    icon: icon3, 
+    img: char3, 
+    tag: 'PROJ', 
+    badge: 'Lv.5', 
+    color: '#39ff14' 
+  },
+  { 
+    id: 'softcuda', 
+    title: 'SOFT-CUDA', 
+    subtitle: 'Hybrid Tensor Engine', 
+    icon: icon1, 
+    img: char1, 
+    tag: 'PROJ', 
+    badge: 'Lv.5', 
+    color: '#a855f7' 
+  },
+  { 
+    id: 'sush', 
+    title: 'SUSH', 
+    subtitle: 'POSIX Shell in C++', 
+    icon: icon2, 
+    img: char2, 
+    tag: 'PROJ', 
+    badge: 'Lv.4', 
+    color: '#facc15' 
+  },
 ];
 
-// step
+// Image cropping adjustments for each project card
 const CHAR_CROPS = {
-  edu:   { objectPosition: 'center top',  transform: 'scale(1.2)' },
-  skill: { objectPosition: 'center 15%', transform: 'scale(1.1)' },
-  proj:  { objectPosition: 'center top',  transform: 'scale(1.3)' },
-  lang:  { objectPosition: 'center 10%', transform: 'scale(1.2)' },
-  exp:   { objectPosition: 'center top', transform: 'scale(1.15)'},
+  sauceos: { objectPosition: 'center top', transform: 'scale(1.3)' },
+  softcuda: { objectPosition: 'center 15%', transform: 'scale(1.1)' },
+  sush: { objectPosition: 'center 10%', transform: 'scale(1.2)' },
 };
 
-// step
+// Detailed data for each project
 const DETAIL_DATA = [
   {
-    topTitle:    'Education Log',
-    subLevel:    'Superimposition Lv. 2',
-    description: 'Computer Science undergraduate. Specializing in systems programming, OS internals, and low-level computing. Active open source contributor with real shipped projects.',
+    topTitle: 'sauceOS — Operating System',
+    subLevel: 'Superimposition Lv. 5',
+    description: 'A 64-bit operating system built from scratch to understand kernel internals, memory management, and hardware-level programming.',
     bullets: [
-      'B.Tech Computer Science — currently enrolled',
-      'CGPA competitive, side projects prioritized',
-      'Self-taught systems programmer since high school',
+      'Boots via Limine bootloader with custom GDT, IDT, ISR/IRQ, and TSS',
+      'Implemented buddy memory allocator with proper splitting and coalescing',
+      '4-level paging with independent per-process virtual address spaces',
+      'PS/2 keyboard driver with interrupt handling + minimal libc and syscall interface',
     ],
-    links: ['#', '#', '#'],
+    links: ['https://github.com/souls-syntax/sauceOS'],
   },
   {
-    topTitle:    'Tech Stack',
-    subLevel:    'Superimposition Lv. 5',
-    description: 'Systems-first programming stack. C is the primary weapon. CUDA for GPU-accelerated workloads. Zig for memory-safe systems work. Shell scripting for automation.',
+    topTitle: 'soft-cuda — Hybrid CPU/GPU Tensor Engine',
+    subLevel: 'Superimposition Lv. 5',
+    description: 'High-performance tensor execution engine with hybrid CPU/GPU scheduling and full autograd support built from scratch.',
     bullets: [
-      'C  ·  CUDA  ·  C++  ·  Zig',
-      'Lua  ·  Shell  ·  Python (reluctantly)',
-      'Neovim · Git · GDB · Valgrind · Make',
+      'Bump allocator memory pool, lazy evaluation DAG, and 3-pass AOT compiler',
+      'Double-buffered SGEMM kernel using CUDA streams (35% faster than GPU-only)',
+      'Full forward & backward pass with MSE, Cross-Entropy, and SGD optimizers',
+      'Trained XOR to near-zero loss and validated end-to-end autograd pipeline',
     ],
-    links: ['#', '#', '#'],
+    links: ['https://github.com/souls-syntax/soft-cuda'],
   },
   {
-    topTitle:    'Shipped Projects',
-    subLevel:    'Superimposition Lv. 4',
-    description: 'Real projects that actually run. OS from bare metal. A POSIX shell. A runtime loader. A typed C STL. Each one built to understand systems from the ground up.',
+    topTitle: 'sush — POSIX Compliant Shell',
+    subLevel: 'Superimposition Lv. 4',
+    description: 'A clean Unix shell implementation in C++ that directly uses system calls for process management and piping.',
     bullets: [
-      'sauceOS — x86_64 OS (Limine bootloader, Flanterm terminal)',
-      'sush — POSIX shell written in C++',
-      'tsundere-runtime — ELF runtime loader in Zig',
-      'C-STL — generic containers in C with type tokens',
+      'Supports piping chains, command history, and variable expansion',
+      'Custom lexer and token expander handling complex quoting and substitution',
+      'Direct usage of fork, exec, pipe, and dup2 for process creation and IPC',
     ],
-    links: [
-      'https://github.com/souls-syntax/sauceOS',
-      'https://github.com/souls-syntax/sush',
-      'https://github.com/souls-syntax/tsundere-runtime',
-      'https://github.com/souls-syntax/C-STL',
-    ],
-  },
-  {
-    topTitle:    'Languages',
-    subLevel:    'Superimposition Lv. 3',
-    description: 'Language fluency ranked by depth of understanding, not just syntax. C is home. CUDA for parallel computing. Zig is the future of systems.',
-    bullets: [
-      'C — primary language, used daily',
-      'CUDA — GPU kernels, memory models',
-      'C++ — sush shell, template metaprogramming',
-      'Zig — tsundere-runtime, comptime wizardry',
-    ],
-    links: ['#', '#', '#', '#'],
-  },
-  {
-    topTitle: 'Experience',
-    subLevel: 'Superimposition Lv. 6',
-    description: 'Worked on systems tooling and runtime internals.',
-    bullets: [
-      'Built runtime loader experiments',
-      'Worked on low-level Linux tooling',
-      'Contributed to open source systems projects',
-    ],
-    links: [
-      'https://github.com/yourproject',
-      '#',
-      '#',
-    ],
+    links: ['https://github.com/souls-syntax/sush'],
   },
 ];
 
-export default function ResumePage({ src }) {
+export default function ProjectPage({ src }) {
   const navigate = useNavigate();
   const [active, setActive]   = useState(0);
   const [mounted, setMounted] = useState(false);
