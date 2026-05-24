@@ -448,8 +448,8 @@ export default function Socials() {
           position: absolute;
           inset: 0; z-index: 6;
           display: flex; flex-direction: column;
-          justify-content: flex-end;
-          padding: 28px 32px 32px;
+          padding: 70px 32px 32px;
+          overflow-y: auto;
           opacity: 0;
           transform: translateY(16px);
           transition: opacity 0.45s ease 0.1s, transform 0.45s cubic-bezier(0.22,1,0.36,1) 0.1s;
@@ -463,11 +463,12 @@ export default function Socials() {
         /* Top area of content — platform title */
         .sw-content-top {
           display: flex; align-items: baseline; gap: 12px;
+          margin-top: auto;
           margin-bottom: 4px;
         }
         .sw-platform-title {
           font-family: 'Bebas Neue', sans-serif;
-          font-size: 68px; line-height: 0.9;
+          font-size: 56px; line-height: 0.9;
           letter-spacing: 3px;
           color: #ffffff;
           transform: skewX(-6deg);
@@ -475,14 +476,6 @@ export default function Socials() {
             0 0 28px rgba(34,211,238,0.45),
             0 2px 0 rgba(0,0,0,0.8);
           user-select: none;
-        }
-        .sw-platform-suffix {
-          font-family: 'Bebas Neue', sans-serif;
-          font-size: 22px; letter-spacing: 3px;
-          color: #22d3ee; font-style: italic;
-          transform: skewX(-5deg);
-          text-shadow: 0 0 18px rgba(34,211,238,0.8);
-          line-height: 1; flex-shrink: 0;
         }
 
         .sw-platform-handle {
@@ -839,7 +832,6 @@ export default function Socials() {
                 {/* Platform mega-title */}
                 <div className="sw-content-top">
                   <div className="sw-platform-title">{item.title}</div>
-                  <div className="sw-platform-suffix">// platform</div>
                 </div>
 
                 {/* Handle */}
