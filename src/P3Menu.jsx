@@ -188,10 +188,16 @@ export default function P3Menu({ onNavigate }) {
           color: rgba(255,255,255,0.4);
         }
         .p3-hint-key {
-          border: 1px solid #22d3ee;
-          color: #22d3ee;
+          border: 1px solid #a855f7;
+          color: #a855f7;
           border-radius: 3px;
           padding: 1px 6px; font-size: 11px;
+          transition: all 0.3s ease;
+          animation: key-glow 3s ease-in-out infinite;
+        }
+        @keyframes key-glow {
+          0%, 100% { box-shadow: 0 0 4px rgba(168,85,247,0.3); border-color: #a855f7; color: #a855f7; }
+          50% { box-shadow: 0 0 10px rgba(168,85,247,0.7), 0 0 20px rgba(57,255,20,0.15); border-color: #c084fc; color: #c084fc; }
         }
 
         .p3-name-tag {
@@ -204,7 +210,7 @@ export default function P3Menu({ onNavigate }) {
           font-size: 108px;
           line-height: 0.88;
           letter-spacing: 2px;
-          color: rgba(34, 211, 238, 0.4);
+          color: rgba(34, 211, 238, 0.35);
           transform: rotate(18deg);
           transform-origin: left top;
           user-select: none;
@@ -212,11 +218,19 @@ export default function P3Menu({ onNavigate }) {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          text-shadow: 0 0 10px rgba(34, 211, 238, 0.2);
+          animation: name-tag-breathe 4s ease-in-out infinite;
+        }
+        @keyframes name-tag-breathe {
+          0%, 100% { text-shadow: 0 0 20px rgba(34,211,238,0.15); color: rgba(34,211,238,0.35); }
+          50% { text-shadow: 0 0 40px rgba(34,211,238,0.3), 0 0 80px rgba(168,85,247,0.1); color: rgba(34,211,238,0.5); }
         }
         .p3-name-tag span:first-child {
           color: rgba(255, 255, 255, 0.86);
-          text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+          animation: name-top-breathe 4s ease-in-out infinite;
+        }
+        @keyframes name-top-breathe {
+          0%, 100% { text-shadow: 0 0 14px rgba(255,255,255,0.25); }
+          50% { text-shadow: 0 0 30px rgba(255,255,255,0.5), 0 0 60px rgba(57,255,20,0.12); }
         }
       `}</style>
 

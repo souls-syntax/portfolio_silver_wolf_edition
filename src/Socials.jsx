@@ -316,16 +316,30 @@ export default function Socials() {
           color: #fff;
           font-family: 'Inter', sans-serif;
           font-size: 14px;
-          opacity: 0.6;
+          letter-spacing: 2px;
+          opacity: 0.7;
           cursor: pointer;
+          transition: all 0.25s ease;
         }
-        .hsr-nav-hint:hover { opacity: 1; }
+        .hsr-nav-hint:hover {
+          opacity: 1;
+          color: #39ff14;
+          transform: translateX(-4px);
+          text-shadow: 0 0 12px rgba(57, 255, 20, 0.5);
+        }
+        .hsr-nav-hint:hover .hsr-back-btn {
+          border-color: #39ff14;
+          box-shadow: 0 0 14px rgba(57, 255, 20, 0.5);
+          background: rgba(57, 255, 20, 0.1);
+        }
         .hsr-back-btn {
           width: 36px; height: 36px;
           border-radius: 50%;
           border: 1px solid rgba(255,255,255,0.4);
           display: flex; align-items: center; justify-content: center;
           background: rgba(0,0,0,0.5);
+          transition: all 0.25s ease;
+          font-size: 18px;
         }
       `}</style>
 
