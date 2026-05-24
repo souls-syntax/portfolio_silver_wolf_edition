@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import charImg from "./assets/Silverwolf_Render2_Hoyo-transparents.png";
+import { getBlogs } from "./blogCache";
 
 const LANG_COLORS = {
   C: "#5b8fcc", "C++": "#f34b7d", Zig: "#f7a41d", CUDA: "#76b900",
@@ -41,18 +43,13 @@ export default function BlogPage({ src }) {
   const allTags = [...new Set(blogs.flatMap(b => b.tags))].sort();
 
   useEffect(() => {
-    fetch('/api/blogs')
-      .then(async res => {
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`API ${res.status}: ${text.slice(0, 200)}`);
-        }
-        return res.json();
-      })
+    // getCachedBlogs gives instant result if prefetch already resolved,
+    // otherwise getBlogs() returns the in-flight promise — no second fetch.
+    getBlogs()
       .then(data => {
-        setBlogs(data.blogs || []);
-        setSeries(data.series || []);
-        setResults(data.blogs || []);
+        setBlogs(data.blogs);
+        setSeries(data.series);
+        setResults(data.blogs);
         setLoading(false);
       })
       .catch(err => {
@@ -129,10 +126,43 @@ export default function BlogPage({ src }) {
           display: flex;
           flex-direction: column;
           overflow: hidden;
-          /* Blurred dark tint over the background video */
-          background: rgba(10, 5, 20, 0.75);
-          backdrop-filter: blur(14px) saturate(0.7);
-          -webkit-backdrop-filter: blur(14px) saturate(0.7);
+          background: rgba(6, 3, 15, 0.82);
+          backdrop-filter: blur(14px) saturate(0.8);
+          -webkit-backdrop-filter: blur(14px) saturate(0.8);
+        }
+
+        .blog-watermark {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          height: 240px;
+          width: auto;
+          opacity: 1;
+          pointer-events: none;
+          z-index: 12;
+          object-fit: contain;
+          object-position: right bottom;
+          filter: drop-shadow(0 0 18px rgba(168, 85, 247, 0.45)) drop-shadow(0 0 6px rgba(57, 255, 20, 0.25));
+          border-radius: 4px;
+        }
+
+        .blog-back-btn {
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 16px;
+          letter-spacing: 2px;
+          color: #22d3ee;
+          background: rgba(34, 211, 238, 0.1);
+          border: 1px solid rgba(34, 211, 238, 0.4);
+          padding: 6px 14px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          margin-right: 20px;
+          clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+        }
+        .blog-back-btn:hover {
+          background: rgba(34, 211, 238, 0.25);
+          border-color: #22d3ee;
+          box-shadow: 0 0 12px rgba(34, 211, 238, 0.3);
         }
 
         /* ── Header bar ── */
@@ -308,9 +338,11 @@ export default function BlogPage({ src }) {
         .blog-card {
           position: relative;
           margin-bottom: 10px;
-          background: rgba(20,15,35,0.82);
+          background: linear-gradient(135deg, rgba(30, 18, 58, 0.85) 0%, rgba(10, 6, 20, 0.85) 100%);
           clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
-          border-left: 3px solid transparent;
+          border-left: 3px solid rgba(168, 85, 247, 0.3);
+          border: 1px solid rgba(168, 85, 247, 0.15);
+          border-left: 3px solid rgba(168, 85, 247, 0.4);
           cursor: pointer;
           transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
           animation: blog-card-in 0.3s ease both;
@@ -318,10 +350,10 @@ export default function BlogPage({ src }) {
         }
         .blog-card:hover,
         .blog-card.active-card {
-          background: rgba(30,20,50,0.95);
-          border-left-color: #22d3ee;
+          background: linear-gradient(135deg, rgba(42, 27, 77, 0.95) 0%, rgba(16, 10, 32, 0.95) 100%);
+          border-left-color: #39ff14;
           transform: translateX(4px);
-          box-shadow: 0 4px 15px rgba(168,85,247,0.2);
+          box-shadow: 0 4px 24px rgba(57, 255, 20, 0.12), 0 0 0 1px rgba(57, 255, 20, 0.1);
         }
         .blog-card-inner {
           padding: 18px 24px 18px 22px;
@@ -356,8 +388,8 @@ export default function BlogPage({ src }) {
         }
         .blog-card:hover .blog-card-title,
         .blog-card.active-card .blog-card-title {
-          color: #22d3ee;
-          text-shadow: 0 0 8px rgba(34,211,238,0.3);
+          color: #39ff14;
+          text-shadow: 0 0 12px rgba(57, 255, 20, 0.3);
         }
         .blog-card-excerpt {
           font-family: 'Inter', sans-serif;
@@ -396,12 +428,12 @@ export default function BlogPage({ src }) {
         .blog-card-arrow {
           font-family: 'Bebas Neue', sans-serif;
           font-size: 22px;
-          color: rgba(168,85,247,0.5);
+          color: rgba(168, 85, 247, 0.6);
           transition: color 0.18s ease, transform 0.18s ease;
         }
         .blog-card:hover .blog-card-arrow,
         .blog-card.active-card .blog-card-arrow {
-          color: #22d3ee;
+          color: #39ff14;
           transform: translateX(4px);
         }
 
@@ -410,7 +442,7 @@ export default function BlogPage({ src }) {
           position: absolute;
           top: 0; left: 0; bottom: 0;
           width: 28px;
-          background: linear-gradient(180deg, #a855f7 0%, rgba(168,85,247,0.3) 100%);
+          background: linear-gradient(180deg, #39ff14 0%, rgba(57, 255, 20, 0.25) 100%);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -428,16 +460,18 @@ export default function BlogPage({ src }) {
         /* ── Series View ── */
         .series-card {
           margin-bottom: 18px;
-          background: rgba(20,15,35,0.82);
+          background: linear-gradient(135deg, rgba(30, 18, 58, 0.85) 0%, rgba(10, 6, 20, 0.85) 100%);
+          border: 1px solid rgba(168, 85, 247, 0.2);
+          border-left: 3px solid rgba(57, 255, 20, 0.4);
           clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
           cursor: pointer;
           animation: blog-card-in 0.3s ease both;
-          border-left: 3px solid transparent;
-          transition: border-color 0.2s ease, background 0.2s ease;
+          transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
         }
         .series-card:hover {
-          background: rgba(30,20,50,0.95);
-          border-left-color: #a855f7;
+          background: linear-gradient(135deg, rgba(42, 27, 77, 0.95) 0%, rgba(16, 10, 32, 0.95) 100%);
+          border-left-color: #39ff14;
+          box-shadow: 0 4px 24px rgba(57, 255, 20, 0.1);
         }
         .series-header {
           padding: 20px 28px 14px;
@@ -456,7 +490,7 @@ export default function BlogPage({ src }) {
           flex: 1;
         }
         .series-card:hover .series-title {
-          color: #22d3ee;
+          color: #39ff14;
         }
         .series-chapter-count {
           font-family: 'Bebas Neue', sans-serif;
@@ -587,8 +621,11 @@ export default function BlogPage({ src }) {
       `}</style>
 
       <div className={`blog-overlay${mounted ? " mounted" : ""}`}>
+        <img className="blog-watermark" src={charImg} alt="" />
+
         {/* Header */}
         <div className="blog-header">
+          <button className="blog-back-btn" onClick={() => navigate("/")}>← BACK</button>
           <div>
             <div className="blog-header-title">SYSTEM BLOG</div>
             <div className="blog-header-sub">SOULS SYNTAX — FIELD NOTES FROM THE MACHINE</div>

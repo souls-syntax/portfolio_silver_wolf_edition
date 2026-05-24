@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import bgVideo from './assets/main1.mp4';
+import { invalidateBlogCache } from './blogCache';
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -64,13 +65,9 @@ export default function AdminPage() {
       });
       
       if (res.ok) {
+        invalidateBlogCache(); // force fresh fetch next time blog page opens
         setStatus('Blog published successfully!');
-        setTitle('');
-        setExcerpt('');
-        setTags('');
-        setContent('');
-        setSeriesId('');
-        setChapterIndex('');
+        setTitle(''); setExcerpt(''); setTags(''); setContent(''); setSeriesId(''); setChapterIndex('');
       } else {
         const err = await res.json();
         setStatus(`Error: ${err.error}`);
@@ -89,6 +86,7 @@ export default function AdminPage() {
         headers: { 'Authorization': 'Bearer admin123' }
       });
       if (res.ok) {
+        invalidateBlogCache(); // force fresh fetch next time blog page opens
         setStatus(`Deleted ${id} successfully!`);
         setBlogs(blogs.filter(b => b.id !== id));
       } else {

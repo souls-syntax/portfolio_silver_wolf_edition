@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
+import { useEffect } from 'react'
 import menuVideo from './assets/silver-wolf-honkai-star-rail-4k-wallpaperwaifu-com.mp4'
 import P3Menu from './P3Menu'
 import VideoPage from './VideoPage'
@@ -10,6 +11,7 @@ import AboutMe from './AboutMe'
 import BlogPage from './BlogPage'
 import BlogPost from './BlogPost'
 import AdminPage from './AdminPage'
+import { prefetchBlogs } from './blogCache'
 import './App.css'
 
 function MenuScreen() {
@@ -64,5 +66,6 @@ function AnimatedRoutes() {
 }
 
 export default function App() {
+  useEffect(() => { prefetchBlogs(); }, []);
   return <AnimatedRoutes />
 }
