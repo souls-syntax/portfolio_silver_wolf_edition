@@ -9,35 +9,38 @@ import icon3 from './assets/icon3.png';
 
 // step
 const ITEMS = [
-  { 
-    id: 'sauceos', 
-    title: 'SAUCEOS', 
-    subtitle: 'x86-64 OS from Scratch', 
-    icon: icon3, 
-    img: char3, 
-    tag: 'PROJ', 
-    badge: 'Lv.5', 
-    color: '#39ff14' 
+  {
+    id: 'sauceos',
+    title: 'SAUCEOS',
+    subtitle: 'x86-64 OS from Scratch',
+    icon: icon3,
+    img: char3,
+    tag: 'PROJ',
+    badge: 'Lv.5',
+    color: '#39ff14',
+    github: 'https://github.com/souls-syntax/sauceOS'
   },
-  { 
-    id: 'softcuda', 
-    title: 'SOFT-CUDA', 
-    subtitle: 'Hybrid Tensor Engine', 
-    icon: icon1, 
-    img: char1, 
-    tag: 'PROJ', 
-    badge: 'Lv.5', 
-    color: '#a855f7' 
+  {
+    id: 'softcuda',
+    title: 'SOFT-CUDA',
+    subtitle: 'Hybrid Tensor Engine',
+    icon: icon1,
+    img: char1,
+    tag: 'PROJ',
+    badge: 'Lv.5',
+    color: '#a855f7',
+    github: 'https://github.com/souls-syntax/soft-cuda'
   },
-  { 
-    id: 'sush', 
-    title: 'SUSH', 
-    subtitle: 'POSIX Shell in C++', 
-    icon: icon2, 
-    img: char2, 
-    tag: 'PROJ', 
-    badge: 'Lv.4', 
-    color: '#facc15' 
+  {
+    id: 'sush',
+    title: 'SUSH',
+    subtitle: 'POSIX Shell in C++',
+    icon: icon2,
+    img: char2,
+    tag: 'PROJ',
+    badge: 'Lv.4',
+    color: '#facc15',
+    github: 'https://github.com/souls-syntax/sush'
   },
 ];
 
@@ -130,7 +133,11 @@ export default function ProjectPage({ src }) {
 
   const detail = DETAIL_DATA[active];
   const item   = ITEMS[active];
-
+  const openProject = (githubUrl) => {
+    if (githubUrl) {
+      window.open(githubUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
   return (
     <div id="hsr-resume-screen" style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#06030f' }}>
 
@@ -540,7 +547,16 @@ export default function ProjectPage({ src }) {
                       style={{ filter: `drop-shadow(0 0 6px ${it.color})` }}
                     />
                     <div className="res-bar-text">
-                      <div className="res-bar-title">{it.title}</div>
+                      <div 
+                        className="res-bar-title" 
+                        style={{ cursor: 'pointer' }}
+                        onClick={(e) => {
+                          e.stopPropagation();        // Important: don't trigger bar selection
+                          openProject(it.github);
+                        }}
+                      >
+                        {it.title}
+                      </div>
                       <div className="res-bar-sub">{it.subtitle}</div>
                     </div>
                     <div
