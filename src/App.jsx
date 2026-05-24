@@ -12,6 +12,7 @@ import Socials from './Socials'
 import AboutMe from './AboutMe'
 import BlogPage from './BlogPage'
 import BlogPost from './BlogPost'
+import AdminPage from './AdminPage'
 import './App.css'
 
 function MenuScreen() {
@@ -55,6 +56,9 @@ function AnimatedRoutes() {
         } />
         <Route path="/blog/:id" element={
           <PageTransition><BlogPost /></PageTransition>
+        } />
+        <Route path="/admin" element={
+          <PageTransition><AdminPage /></PageTransition>
         } />
       </Routes>
     </AnimatePresence>

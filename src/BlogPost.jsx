@@ -1,10 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BLOGS, SERIES, getSeriesChapters } from "./data/blogs.js";
-import {
-  getComments, saveComment, addReaction, buildThreadTree,
-  getIdentity, saveIdentity, formatTime,
-} from "./data/comments.js";
+import { buildThreadTree, getIdentity, saveIdentity, formatTime } from "./data/comments.js";
 import bgVideo from "./assets/main1.mp4";
 
 // ── Markdown renderer (lightweight, no deps) ─────────────────────────────────
@@ -190,25 +187,46 @@ function CommentNode({ node, postId, depth = 0, onReply, onReact, allComments, s
   const [showEmojis, setShowEmojis]     = useState(false);
   const identity = getIdentity();
 
-  const handleReply = () => {
+  const handleReply = async () => {
     if (!replyText.trim() || !identity) return;
-    const newComment = saveComment(postId, {
-      parentId:  node.id,
-      author:    identity.username,
-      colorHue:  identity.colorHue,
-      body:      replyText.trim(),
-    });
-    const updated = getComments(postId);
-    setComments(buildThreadTree(updated));
-    setReplyText("");
-    setShowReplyBox(false);
+    
+    try {
+      const res = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          postId,
+          parentId: node.id,
+          author: identity.username,
+          colorHue: identity.colorHue,
+          body: replyText.trim(),
+        })
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setComments(buildThreadTree(updated));
+        setReplyText("");
+        setShowReplyBox(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleReact = (emoji) => {
-    addReaction(postId, node.id, emoji);
-    const updated = getComments(postId);
-    setComments(buildThreadTree(updated));
-    setShowEmojis(false);
+  const handleReact = async (emoji) => {
+    try {
+      const res = await fetch('/api/comments', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commentId: node.id, emoji })
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setComments(buildThreadTree(updated));
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const totalReactions = Object.values(node.reactions || {}).reduce((a, b) => a + b, 0);
@@ -316,25 +334,51 @@ function CommentNode({ node, postId, depth = 0, onReply, onReact, allComments, s
 function CommentSection({ postId }) {
   const [identity, setIdentity]     = useState(getIdentity);
   const [showModal, setShowModal]   = useState(false);
-  const [comments, setComments]     = useState(() => buildThreadTree(getComments(postId)));
+  const [comments, setComments]     = useState([]);
   const [newComment, setNewComment] = useState("");
   const [postError, setPostError]   = useState("");
+  const [totalComments, setTotalComments] = useState(0);
 
-  const totalComments = getComments(postId).length;
+  useEffect(() => {
+    fetch(`/api/comments?postId=${postId}`)
+      .then(res => res.json())
+      .then(data => {
+        if(Array.isArray(data)) {
+          setTotalComments(data.length);
+          setComments(buildThreadTree(data));
+        }
+      })
+      .catch(console.error);
+  }, [postId]);
 
-  const handlePost = () => {
+  const handlePost = async () => {
     if (!identity) { setShowModal(true); return; }
     if (!newComment.trim()) { setPostError("Write something first."); return; }
-    saveComment(postId, {
-      parentId: null,
-      author:   identity.username,
-      colorHue: identity.colorHue,
-      body:     newComment.trim(),
-    });
-    const updated = getComments(postId);
-    setComments(buildThreadTree(updated));
-    setNewComment("");
-    setPostError("");
+    
+    try {
+      const res = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          postId,
+          parentId: null,
+          author: identity.username,
+          colorHue: identity.colorHue,
+          body: newComment.trim(),
+        })
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setTotalComments(updated.length);
+        setComments(buildThreadTree(updated));
+        setNewComment("");
+        setPostError("");
+      } else {
+        setPostError("Failed to post comment.");
+      }
+    } catch (err) {
+      setPostError("Network error.");
+    }
   };
 
   const handleSaveIdentity = (username, colorHue) => {
@@ -429,17 +473,43 @@ export default function BlogPost() {
   const [mounted, setMounted] = useState(false);
   const contentRef = useRef(null);
 
-  const post = BLOGS.find(b => b.id === id);
-  const series = post?.seriesId ? SERIES.find(s => s.id === post.seriesId) : null;
-  const chapters = series ? getSeriesChapters(post.seriesId) : [];
-  const currentChapterIdx = chapters.findIndex(c => c.id === id);
-  const prevChapter = currentChapterIdx > 0 ? chapters[currentChapterIdx - 1] : null;
-  const nextChapter = currentChapterIdx < chapters.length - 1 ? chapters[currentChapterIdx + 1] : null;
+  const [post, setPost] = useState(null);
+  const [seriesInfo, setSeriesInfo] = useState({ series: null, chapters: [] });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    fetch('/api/blogs')
+      .then(res => res.json())
+      .then(data => {
+        const blogs = data.blogs || [];
+        const seriesList = data.series || [];
+        
+        const currentPost = blogs.find(b => b.id === id);
+        setPost(currentPost);
+
+        if (currentPost?.seriesId) {
+          const s = seriesList.find(s => s.id === currentPost.seriesId);
+          const ch = blogs
+            .filter(b => b.seriesId === currentPost.seriesId)
+            .sort((a, b) => (a.chapterIndex || 0) - (b.chapterIndex || 0));
+          setSeriesInfo({ series: s, chapters: ch });
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+
     const t = setTimeout(() => setMounted(true), 80);
     return () => clearTimeout(t);
-  }, []);
+  }, [id]);
+
+  useEffect(() => {
+    if (contentRef.current && post && !loading) {
+      contentRef.current.innerHTML = renderMarkdown(post.content);
+    }
+  }, [post, loading]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -453,6 +523,17 @@ export default function BlogPost() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [navigate]);
+
+  if (loading) {
+    return (
+      <div id="menu-screen">
+        <video src={bgVideo} autoPlay loop muted playsInline />
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.7)" }}>
+          <div style={{ fontFamily: "Anton, sans-serif", fontSize: 32, color: "#c4001a", letterSpacing: 4 }}>LOADING...</div>
+        </div>
+      </div>
+    );
+  }
 
   if (!post) {
     return (
@@ -490,25 +571,13 @@ export default function BlogPost() {
           opacity: 0;
           transform: translateX(20px);
           transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22,1,0.36,1);
+          /* Blurred dark tint over the background video */
+          background: rgba(4, 6, 14, 0.62);
+          backdrop-filter: blur(14px) saturate(0.7);
+          -webkit-backdrop-filter: blur(14px) saturate(0.7);
         }
         .post-overlay.mounted { opacity: 1; transform: translateX(0); }
-        /* Blurred black-tint backdrop behind all content */
-        .post-overlay::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          z-index: 0;
-          background: rgba(0, 0, 0, 0.75);
-          backdrop-filter: blur(18px) saturate(0.5);
-          -webkit-backdrop-filter: blur(18px) saturate(0.5);
-          pointer-events: none;
-        }
-        /* Lift all children above the backdrop */
-        .post-topbar,
-        .post-body {
-          position: relative;
-          z-index: 1;
-        }
+
 
         /* ── Top bar ── */
         .post-topbar {

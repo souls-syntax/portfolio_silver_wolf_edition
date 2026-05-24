@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { BLOGS, SERIES, searchBlogs } from "./data/blogs.js";
 import bgVideo from "./assets/main1.mp4";
 
 const LANG_COLORS = {
@@ -27,23 +26,61 @@ function fuzzyScore(blog, query) {
 
 export default function BlogPage() {
   const navigate = useNavigate();
+  const [blogs, setBlogs]           = useState([]);
+  const [series, setSeries]         = useState([]);
   const [query, setQuery]           = useState("");
-  const [results, setResults]       = useState(BLOGS);
+  const [results, setResults]       = useState([]);
   const [activeTag, setActiveTag]   = useState(null);
   const [view, setView]             = useState("posts"); // "posts" | "series"
   const [mounted, setMounted]       = useState(false);
   const [activePost, setActivePost] = useState(0);
+  const [loading, setLoading]       = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const inputRef = useRef(null);
 
   // Collect all unique tags
-  const allTags = [...new Set(BLOGS.flatMap(b => b.tags))].sort();
+  const allTags = [...new Set(blogs.flatMap(b => b.tags))].sort();
 
   useEffect(() => {
+    fetch('/api/blogs')
+      .then(async res => {
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`API ${res.status}: ${text.slice(0, 200)}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        setBlogs(data.blogs || []);
+        setSeries(data.series || []);
+        setResults(data.blogs || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch blogs:', err);
+        setFetchError(err.message);
+        setLoading(false);
+      });
+
     const t = setTimeout(() => setMounted(true), 80);
     return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {
+    if (loading) return;
+    
+    // Custom search function
+    const searchBlogs = (q) => {
+      if (!q.trim()) return blogs;
+      const lowerQ = q.toLowerCase();
+      return blogs.filter(blog =>
+        blog.title.toLowerCase().includes(lowerQ) ||
+        blog.excerpt.toLowerCase().includes(lowerQ) ||
+        blog.tags.some(tag => tag.toLowerCase().includes(lowerQ)) ||
+        (blog.seriesId && blog.seriesId.toLowerCase().includes(lowerQ))
+      );
+    };
+
     let filtered = searchBlogs(query);
     if (activeTag) {
       filtered = filtered.filter(b => b.tags.includes(activeTag));
@@ -56,7 +93,7 @@ export default function BlogPage() {
     }
     setResults(filtered);
     setActivePost(0);
-  }, [query, activeTag]);
+  }, [query, activeTag, blogs, loading]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -92,26 +129,10 @@ export default function BlogPage() {
           display: flex;
           flex-direction: column;
           overflow: hidden;
-        }
-        /* Blurred black-tint backdrop */
-        .blog-overlay::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          z-index: 0;
-          background: rgba(0, 0, 0, 0.72);
-          backdrop-filter: blur(18px) saturate(0.6);
-          -webkit-backdrop-filter: blur(18px) saturate(0.6);
-          pointer-events: none;
-        }
-        /* Ensure all direct children sit above the backdrop */
-        .blog-header,
-        .blog-search-wrap,
-        .blog-tags-row,
-        .blog-content,
-        .blog-footer {
-          position: relative;
-          z-index: 1;
+          /* Blurred dark tint over the background video */
+          background: rgba(4, 6, 14, 0.62);
+          backdrop-filter: blur(14px) saturate(0.7);
+          -webkit-backdrop-filter: blur(14px) saturate(0.7);
         }
 
         /* ── Header bar ── */
@@ -563,7 +584,7 @@ export default function BlogPage() {
             autoComplete="off"
             spellCheck={false}
           />
-          <span className="blog-search-count">{results.length} / {BLOGS.length}</span>
+          <span className="blog-search-count">{results.length} / {blogs.length}</span>
         </div>
 
         {/* Tag pills */}
@@ -588,7 +609,19 @@ export default function BlogPage() {
 
         {/* Content */}
         <div className="blog-content">
-          {view === "posts" && (
+          {loading && (
+            <div className="blog-empty">
+              <div className="blog-empty-title" style={{ fontSize: 28, color: '#c4001a', letterSpacing: 6 }}>LOADING...</div>
+            </div>
+          )}
+          {!loading && fetchError && (
+            <div className="blog-empty">
+              <div className="blog-empty-title" style={{ fontSize: 28, color: '#c4001a' }}>API ERROR</div>
+              <div className="blog-empty-sub" style={{ color: 'rgba(255,120,120,0.7)', fontFamily: 'JetBrains Mono, monospace', fontSize: 12, marginTop: 12, maxWidth: 600, wordBreak: 'break-all' }}>{fetchError}</div>
+              <div className="blog-empty-sub" style={{ marginTop: 16 }}>Make sure <code style={{ color: '#ff6eb4', fontFamily: 'monospace' }}>vercel dev</code> is running on port 3000</div>
+            </div>
+          )}
+          {view === "posts" && !loading && !fetchError && (
             <>
               {results.length === 0 ? (
                 <div className="blog-empty">
@@ -620,7 +653,7 @@ export default function BlogPage() {
                       {blog.seriesId && (
                         <div className="blog-card-series-badge">
                           <span>▶</span>
-                          {SERIES.find(s => s.id === blog.seriesId)?.title ?? blog.seriesId}
+                          {series.find(s => s.id === blog.seriesId)?.title ?? blog.seriesId}
                         </div>
                       )}
                       <div className="blog-card-title">{blog.title}</div>
@@ -645,24 +678,24 @@ export default function BlogPage() {
             </>
           )}
 
-          {view === "series" && (
+          {view === "series" && !loading && !fetchError && (
             <>
-              {SERIES.map((series, si) => {
-                const chapters = BLOGS
-                  .filter(b => b.seriesId === series.id)
+              {series.map((s, si) => {
+                const chapters = blogs
+                  .filter(b => b.seriesId === s.id)
                   .sort((a, b) => (a.chapterIndex ?? 0) - (b.chapterIndex ?? 0));
                 return (
                   <div
-                    key={series.id}
+                    key={s.id}
                     className="series-card"
                     style={{ animationDelay: `${si * 80}ms` }}
                   >
                     <div className="series-header">
                       <div>
-                        <div className="series-title">{series.title}</div>
-                        <div className="series-desc">{series.description}</div>
+                        <div className="series-title">{s.title}</div>
+                        <div className="series-desc">{s.description}</div>
                         <div className="blog-card-tags" style={{ marginTop: 8 }}>
-                          {series.tags.map(tag => (
+                          {s.tags.map(tag => (
                             <span
                               key={tag}
                               className="blog-card-tag"
