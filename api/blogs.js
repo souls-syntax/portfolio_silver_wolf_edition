@@ -53,7 +53,8 @@ export default async function handler(req, res) {
   // ── POST ──────────────────────────────────────────────────────────────────
   if (req.method === 'POST') {
     const authHeader = req.headers.authorization;
-    if (authHeader !== 'Bearer admin123') {
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    if (authHeader !== `Bearer ${adminPassword}`) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
@@ -79,7 +80,8 @@ export default async function handler(req, res) {
   // ── DELETE ────────────────────────────────────────────────────────────────
   if (req.method === 'DELETE') {
     const authHeader = req.headers.authorization;
-    if (authHeader !== 'Bearer admin123') {
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    if (authHeader !== `Bearer ${adminPassword}`) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import charImg from "./assets/Silverwolf_Render2_Hoyo-transparents.png";
 import { getBlogs } from "./blogCache";
+import BackgroundVideo from "./BackgroundVideo";
 
 const LANG_COLORS = {
   C: "#5b8fcc", "C++": "#f34b7d", Zig: "#f7a41d", CUDA: "#76b900",
@@ -117,16 +118,9 @@ export default function BlogPage({ src }) {
     <div id="hsr-blog-screen" style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#06030f' }}>
 
       {/* BG video — same treatment as main page, no flat overlay killing it */}
-      <video
+      <BackgroundVideo
         src={src}
-        autoPlay
-        loop
-        muted
-        playsInline
         style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover', zIndex: 0,
           filter: 'blur(8px) brightness(0.3) saturate(1.3)',
         }}
       />

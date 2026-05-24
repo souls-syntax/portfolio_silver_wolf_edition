@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BackgroundVideo from './BackgroundVideo';
 import char1 from './assets/Silverwolf_Render1_Hoyo-transparents.png';
 import char2 from './assets/Silverwolf_Render2_Hoyo-transparents.png';
 import char3 from './assets/Silverwolf_Render3_Hoyo-transparents.png';
@@ -142,13 +143,9 @@ export default function ResumePage({ src }) {
   return (
     <div id="hsr-resume-screen" style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#06030f' }}>
 
-      <video
+      <BackgroundVideo
         src={src}
-        autoPlay loop muted playsInline
         style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover', zIndex: 0,
           filter: 'blur(8px) brightness(0.3) saturate(1.3)',
         }}
       />

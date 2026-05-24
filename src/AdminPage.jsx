@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import bgVideo from './assets/main1.mp4';
+import BackgroundVideo from './BackgroundVideo';
 import { invalidateBlogCache } from './blogCache';
 
-export default function AdminPage() {
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
+
+export default function AdminPage({ src }) {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
@@ -32,7 +34,7 @@ export default function AdminPage() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (password === 'admin123') {
+    if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
     } else {
       setStatus('Invalid password');
@@ -59,7 +61,7 @@ export default function AdminPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer admin123'
+          'Authorization': `Bearer ${ADMIN_PASSWORD}`
         },
         body: JSON.stringify(blogData)
       });
@@ -83,7 +85,7 @@ export default function AdminPage() {
     try {
       const res = await fetch(`/api/blogs?id=${id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': 'Bearer admin123' }
+        headers: { 'Authorization': `Bearer ${ADMIN_PASSWORD}` }
       });
       if (res.ok) {
         invalidateBlogCache(); // force fresh fetch next time blog page opens
@@ -100,7 +102,7 @@ export default function AdminPage() {
 
   return (
     <div id="menu-screen">
-      <video src={bgVideo} autoPlay loop muted playsInline />
+      <BackgroundVideo src={src} />
       <div className="admin-overlay" style={{
         position: 'absolute', inset: 0, zIndex: 10,
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',

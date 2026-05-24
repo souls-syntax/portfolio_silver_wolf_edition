@@ -4,6 +4,7 @@ import char1 from "./assets/Silverwolf_Render1_Hoyo-transparents.png";
 import char2 from "./assets/Silverwolf_Render2_Hoyo-transparents.png";
 import char3 from "./assets/Silverwolf_Render3_Hoyo-transparents.png";
 import bgVideo from "./assets/silver-wolf-honkai-star-rail-4k-wallpaperwaifu-com.mp4";
+import BackgroundVideo from "./BackgroundVideo";
 
 const CHARS = [char1, char2, char3];
 const CHAR_CROPS = [
@@ -97,7 +98,7 @@ export default function AboutMe() {
 
   return (
     <div id="hsr-about-screen">
-      <video className="hsr-bg-video" src={bgVideo} autoPlay loop muted playsInline />
+      <BackgroundVideo className="hsr-bg-video" src={bgVideo} />
       <div className="hsr-dim-overlay" />
       {revealed && <div key={`dim-${active}`} className="sc-dim" />}
       {revealed && (

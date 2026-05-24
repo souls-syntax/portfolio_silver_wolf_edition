@@ -12,14 +12,24 @@ import BlogPage from './BlogPage'
 import BlogPost from './BlogPost'
 import AdminPage from './AdminPage'
 import ProjectPage from './projects'
+import BackgroundVideo from './BackgroundVideo'
 import { prefetchBlogs } from './blogCache'
+import { prefetchImages, prefetchVideo } from './assetCache'
 import './App.css'
+
+// Import heavy assets for prefetching
+import char1 from './assets/Silverwolf_Render1_Hoyo-transparents.png'
+import char2 from './assets/Silverwolf_Render2_Hoyo-transparents.png'
+import char3 from './assets/Silverwolf_Render3_Hoyo-transparents.png'
+import logo from './assets/silver_wold_curtrated_souls_syntax_logo.png'
+import card from './assets/card.png'
+import newsign from './assets/newsign.png'
 
 function MenuScreen() {
   const navigate = useNavigate()
   return (
     <div id="menu-screen">
-      <video className="hsr-bg-video" src={menuVideo} autoPlay loop muted playsInline style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, filter: 'blur(10px) brightness(0.4) saturate(1.2)' }} />
+      <BackgroundVideo src={menuVideo} style={{ filter: 'blur(10px) brightness(0.4) saturate(1.2)' }} />
       <div className="hsr-dim-overlay" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, transparent 20%, rgba(6,3,15,0.8) 100%)', zIndex: 1 }} />
       <P3Menu onNavigate={(page) => {
         if (page === 'github') {
@@ -67,6 +77,23 @@ function AnimatedRoutes() {
 }
 
 export default function App() {
-  useEffect(() => { prefetchBlogs(); }, []);
+  useEffect(() => {
+    // Prefetch API data
+    prefetchBlogs();
+    
+    // Prefetch background video
+    prefetchVideo(menuVideo);
+    
+    // Prefetch heavy images
+    prefetchImages([
+      char1,
+      char2,
+      char3,
+      logo,
+      card,
+      newsign
+    ]);
+  }, []);
+  
   return <AnimatedRoutes />
 }

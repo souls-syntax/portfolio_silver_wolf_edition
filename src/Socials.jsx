@@ -7,6 +7,7 @@ import icon1 from "./assets/icon1.png";
 import icon2 from "./assets/icon2.png";
 import icon3 from "./assets/icon3.png";
 import bgVideo from "./assets/silver-wolf-honkai-star-rail-4k-wallpaperwaifu-com.mp4";
+import BackgroundVideo from "./BackgroundVideo";
 
 /* ─── Data ──────────────────────────────────────────────────────────────── */
 const ITEMS = [
@@ -150,13 +151,9 @@ export default function Socials() {
     <div id="sw-socials-screen">
 
       {/* ── Background video ── */}
-      <video
+      <BackgroundVideo
         src={bgVideo}
-        autoPlay loop muted playsInline
         style={{
-          position: "absolute", inset: 0,
-          width: "100%", height: "100%",
-          objectFit: "cover", zIndex: 0,
           filter: "blur(8px) brightness(0.3) saturate(1.3)",
         }}
       />

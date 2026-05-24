@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const ITEMS = [
   { id: "about",   label: "ABOUT ME",      page: "about",   fontSize: 80, offsetX: 0,  offsetY: 0,  skew: -6,  skewY: 10  },
@@ -22,6 +22,7 @@ export default function P3Menu({ onNavigate }) {
   const [active, setActive] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [animKey, setAnimKey] = useState(0);
+  const itemRefs = useRef([]);
 
   const activate = (idx) => {
     setActive(idx);
@@ -37,11 +38,17 @@ export default function P3Menu({ onNavigate }) {
     const onKey = (e) => {
       if (e.key === "ArrowUp")   activate(Math.max(0, active - 1));
       if (e.key === "ArrowDown") activate(Math.min(ITEMS.length - 1, active + 1));
-      if (e.key === "Enter")     onNavigate?.(ITEMS[active].page);
+      if (e.key === "Enter") {
+        if (ITEMS[active].id === "github") {
+          itemRefs.current[active]?.click();
+        } else {
+          onNavigate?.(ITEMS[active].page);
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [active]);
+  }, [active, onNavigate]);
 
   return (
     <>
@@ -251,17 +258,31 @@ export default function P3Menu({ onNavigate }) {
             const estH = item.fontSize * 0.94;
             const clipFn = CLIP_SHAPES[i] ?? CLIP_SHAPES[0];
 
+            const isGithub = item.id === 'github';
+            const href = isGithub ? 'https://github.com/souls-syntax' : '#';
+
             return (
               <a
                 key={item.id}
-                href="#"
+                ref={(el) => (itemRefs.current[i] = el)}
+                href={href}
+                target={isGithub ? '_blank' : undefined}
+                rel={isGithub ? 'noopener noreferrer' : undefined}
                 className={`p3-row ${isActive ? "active" : ""} ${mounted ? "mounted" : ""}`}
                 style={{
                   marginRight: item.offsetX,
                   marginTop: item.offsetY,
                   transitionDelay: mounted ? `${i * 80}ms` : "0ms",
+                  outline: 'none',
                 }}
-                onClick={(e) => { e.preventDefault(); onNavigate?.(item.page); }}
+                onClick={(e) => {
+                  if (isGithub) {
+                    // Let native browser navigation open the tab
+                  } else {
+                    e.preventDefault();
+                    onNavigate?.(item.page);
+                  }
+                }}
                 onMouseEnter={() => activate(i)}
                 aria-current={isActive ? "page" : undefined}
               >

@@ -4,6 +4,7 @@ import { BLOGS, SERIES, getSeriesChapters } from "./data/blogs.js";
 import { buildThreadTree, getIdentity, saveIdentity, formatTime } from "./data/comments.js";
 import { getBlogs } from "./blogCache";
 import charImg from "./assets/Silverwolf_Render2_Hoyo-transparents.png";
+import BackgroundVideo from "./BackgroundVideo";
 
 // ── Markdown renderer (lightweight, no deps) ─────────────────────────────────
 function renderMarkdown(md) {
@@ -528,7 +529,7 @@ export default function BlogPost({ src }) {
   if (loading) {
     return (
       <div id="hsr-blog-screen" style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#06030f' }}>
-      <video className="hsr-bg-video" src={src} autoPlay loop muted playsInline style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, filter: 'blur(10px) brightness(0.4) saturate(1.2)' }} />
+      <BackgroundVideo className="hsr-bg-video" src={src} />
       <div className="hsr-dim-overlay" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, transparent 20%, rgba(6,3,15,0.8) 100%)', zIndex: 1 }} />
         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.7)" }}>
           <div style={{ fontFamily: "Anton, sans-serif", fontSize: 32, color: "#22d3ee", letterSpacing: 4 }}>LOADING...</div>
@@ -540,7 +541,7 @@ export default function BlogPost({ src }) {
   if (!post) {
     return (
       <div id="hsr-blog-screen" style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#06030f' }}>
-      <video className="hsr-bg-video" src={src} autoPlay loop muted playsInline style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, filter: 'blur(10px) brightness(0.4) saturate(1.2)' }} />
+      <BackgroundVideo className="hsr-bg-video" src={src} />
       <div className="hsr-dim-overlay" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, transparent 20%, rgba(6,3,15,0.8) 100%)', zIndex: 1 }} />
         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 16 }}>
           <div style={{ fontFamily: "Anton, sans-serif", fontSize: 64, color: "#22d3ee", letterSpacing: 4 }}>404</div>
@@ -563,7 +564,7 @@ export default function BlogPost({ src }) {
 
   return (
     <div id="hsr-blog-screen" style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#06030f' }}>
-      <video className="hsr-bg-video" src={src} autoPlay loop muted playsInline style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, filter: 'blur(10px) brightness(0.4) saturate(1.2)' }} />
+      <BackgroundVideo className="hsr-bg-video" src={src} />
       <div className="hsr-dim-overlay" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, transparent 20%, rgba(6,3,15,0.8) 100%)', zIndex: 1 }} />
       <img src={charImg} alt="" style={{ position: 'fixed', bottom: 20, right: 20, height: 240, width: 'auto', opacity: 1, pointerEvents: 'none', zIndex: 12, objectFit: 'contain', filter: 'drop-shadow(0 0 18px rgba(168,85,247,0.45)) drop-shadow(0 0 6px rgba(57,255,20,0.25))' }} />
 
